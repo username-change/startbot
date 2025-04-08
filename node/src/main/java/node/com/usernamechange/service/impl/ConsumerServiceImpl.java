@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import lombok.extern.log4j.Log4j;
 import node.com.usernamechange.service.ConsumerService;
+import node.com.usernamechange.service.MainService;
 import node.com.usernamechange.service.ProducerService;
 
 import static model.RabbitQueue.*;
@@ -14,22 +15,17 @@ import static model.RabbitQueue.*;
 @Service
 @Log4j
 public class ConsumerServiceImpl implements ConsumerService{
-	private final ProducerService producerService;
+	private final MainService mainService;
 	
-	public ConsumerServiceImpl(ProducerService producerService) {
-		this.producerService = producerService;
+	public ConsumerServiceImpl(MainService mainService) {
+		this.mainService = mainService;
 	}
 
 	@Override
 	@RabbitListener(queues = TEXT_MESSAGE_UPDATE)
 	public void consumeTextMessageUpdate(Update update) {
 		log.debug("node: text message is received");
-		
-		var message = update.getMessage();
-		var sendMessage = new SendMessage();
-		sendMessage.setChatId(message.getChatId().toString());
-		sendMessage.setText("hello from node");
-		producerService.producerReply(sendMessage);
+		mainService.processTextMessage(update);
 	}
 
 	@Override
