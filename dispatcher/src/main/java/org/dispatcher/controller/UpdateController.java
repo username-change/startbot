@@ -31,7 +31,7 @@ public class UpdateController {
 			return;
 		}
 
-		if (update.getMessage() != null) {
+		if (update.hasMessage()) {
 			distributeMessageByType(update);
 		} else {
 			log.error("received unsupported message type" + update);
@@ -40,11 +40,11 @@ public class UpdateController {
 
 	private void distributeMessageByType(Update update) {
 		var message = update.getMessage();
-		if (message.getText() != null) {
+		if (message.hasText()) {
 			processTextMessage(update);
-		} else if (message.getDocument() != null) {
+		} else if (message.hasDocument()) {
 			processDocMessage(update);
-		} else if (message.getPhoto() != null) {
+		} else if (message.hasPhoto()) {
 			processPhotoMessage(update);
 		} else {
 			setUnsupportedMessageTypeView(update);
@@ -58,7 +58,7 @@ public class UpdateController {
 
 	}
 	
-	private void setFileIsReceiveVeiew(Update update) {
+	private void setFileIsReceiveView(Update update) {
 		var sendMessage = messageUtils.generateSendMessageWithText(update,
 				"файл получен! обрабатывается...");
 		setView(sendMessage);
@@ -70,18 +70,16 @@ public class UpdateController {
 
 	private void processPhotoMessage(Update update) {
 		updateProducer.produce(PHOTO_MESSAGE_UPDATE, update);
-		setFileIsReceiveVeiew(update);
+		setFileIsReceiveView(update);
 	}
 
 	private void processDocMessage(Update update) {
 		updateProducer.produce(DOC_MESSAGE_UPDATE, update);
-		setFileIsReceiveVeiew(update);
+		setFileIsReceiveView(update);
 
 	}
 
 	private void processTextMessage(Update update) {
 		updateProducer.produce(TEXT_MESSAGE_UPDATE, update);
-		setFileIsReceiveVeiew(update);
-
 	}
 }

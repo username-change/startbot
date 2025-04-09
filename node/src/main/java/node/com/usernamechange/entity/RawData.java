@@ -2,8 +2,10 @@ package node.com.usernamechange.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,7 +20,9 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode(exclude = "id")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
