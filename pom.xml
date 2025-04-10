@@ -32,6 +32,7 @@
 		<module>common-rabbitmg</module>
 		<module>node</module>
 		<module>common-jpa</module>
+		<module>rest-service</module>
 	</modules>
 
 	<dependencies>

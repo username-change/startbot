@@ -9,7 +9,6 @@ import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,16 +21,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "app_document")
-public class AppDocument {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String telegramField;
-    private String docName;
-    @OneToOne
-    private BinaryContent binaryContent;
-    private String mimeType;
-    private Long fileSize;
+@Table(name = "app_photo")
+public class AppPhoto {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+	private String telegramFileld;
+	@OneToOne
+	private BinaryContent binaryContent;
+	private Integer fileSize;
 
 }
