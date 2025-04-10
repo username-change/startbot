@@ -9,10 +9,15 @@ import lombok.experimental.var;
 import lombok.extern.log4j.Log4j;
 import node.com.usernamechange.dao.AppUserDAO;
 import node.com.usernamechange.dao.RawDataDAO;
+import node.com.usernamechange.entity.AppDocument;
 import node.com.usernamechange.entity.AppUser;
 import node.com.usernamechange.entity.RawData;
+import node.com.usernamechange.exceptions.UploadFileException;
+import node.com.usernamechange.service.FileService;
 import node.com.usernamechange.service.MainService;
 import node.com.usernamechange.service.ProducerService;
+import node.com.usernamechange.service.enums.ServiceCommands;
+
 import static node.com.usernamechange.service.enums.ServiceCommands.*;
 import static node.com.usernamechange.entity.enums.UserState.*;
 
@@ -22,21 +27,24 @@ public class MainServiceImpl implements MainService {
     private final RawDataDAO rawDataDAO;
     private final ProducerService producerService;
     private final AppUserDAO appUserDAO;
+    private final FileService fileService;
 
-    public MainServiceImpl(RawDataDAO rawDataDAO, ProducerService producerService, AppUserDAO appUserDAO) {
+    public MainServiceImpl(RawDataDAO rawDataDAO, ProducerService producerService, AppUserDAO appUserDAO, final FileService fileService) {
 	this.rawDataDAO = rawDataDAO;
 	this.producerService = producerService;
 	this.appUserDAO = appUserDAO;
+	this.fileService = fileService;
     }
 
     @Override
     public void processTextMessage(Update update) {
-        saveRawData(update);
+    saveRawData(update);
     var appUser = findOrSaveAppUser(update);
     var userState = appUser.getState();
     var text = update.getMessage().getText();
     var output = ""; 
     
+    var serviceCommand = ServiceCommands.fromValue(text);
     if(CANCEL.equals(text)) {
     	output = cancelProcess(appUser);
     } else if (BASIC_STATE.equals(userState)) {
@@ -62,12 +70,17 @@ public class MainServiceImpl implements MainService {
         	return;
         }
         
+        try {
+        	AppDocument doc = fileService.processDoc(update.getMessage ());
         //TODO добавить сохранение документа
-        var answer = "документ успешно загружен! ссылка для скачивания";
+        var answer = "документ успешно загружен! ссылка для скачивания: http://test.ru/get-doc/777\"";
         sendAnswer(answer, chatId);
+	} catch (UploadFileException ex) {
+		log.error(ex);
+		String error = "загрузка файла не удалась. повторите попытку позже";
+		sendAnswer(error, chatId);
 	}
-
-	
+    }
 
 	@Override
 	public void processPhotoMessage(Update update) {
@@ -79,7 +92,7 @@ public class MainServiceImpl implements MainService {
 	        }
 	        
 	        //TODO добавить сохранение фотографии
-	        var answer = "фото успешно загружено! ссылка для скачивания";
+	        var answer = "фото успешно загружено! ссылка для скачивания: http://test.ru/get-doc/777";
 	        sendAnswer(answer, chatId);
 	}
 	
