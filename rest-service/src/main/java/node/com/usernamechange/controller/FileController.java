@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import lombok.experimental.var;
 import lombok.extern.log4j.Log4j;
 import node.com.usernamechange.service.FileService;
 

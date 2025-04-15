@@ -5,7 +5,6 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 
-import lombok.experimental.var;
 import lombok.extern.log4j.Log4j;
 import node.com.usernamechange.dao.AppUserDAO;
 import node.com.usernamechange.dao.RawDataDAO;
@@ -17,6 +16,7 @@ import node.com.usernamechange.exceptions.UploadFileException;
 import node.com.usernamechange.service.FileService;
 import node.com.usernamechange.service.MainService;
 import node.com.usernamechange.service.ProducerService;
+import node.com.usernamechange.service.enums.LinkType;
 import node.com.usernamechange.service.enums.ServiceCommands;
 
 import static node.com.usernamechange.service.enums.ServiceCommands.*;
@@ -74,8 +74,8 @@ public class MainServiceImpl implements MainService {
 
 		try {
 			AppDocument doc = fileService.processDoc(update.getMessage());
-			// TODO добавить сохранение документа
-			var answer = "документ успешно загружен! ссылка для скачивания: http://test.ru/get-doc/777\"";
+			String link = fileService.generationLink(doc.getId(), LinkType.GET_DOC);
+			var answer = "документ успешно загружен! ссылка для скачивания: " + link;
 			sendAnswer(answer, chatId);
 		} catch (UploadFileException ex) {
 			log.error(ex);
@@ -95,9 +95,8 @@ public class MainServiceImpl implements MainService {
 
 		try {
 			AppPhoto photo = fileService.processPhoto(update.getMessage());
-			// TODO добавить генерацию ссылки для скачивания фото
-			var answer = "фото успешно загружено! ссылка для скачивания: http://test.ru/get-doc/777";
-			sendAnswer(answer, chatId);
+			String link = fileService.generationLink(photo.getId(), LinkType.GET_PHOTO);
+			var answer = "фото успешно загружено! ссылка для скачивания: " + link;
 		} catch (UploadFileException ex) {
 			log.error(ex);
 			String error = "загрузка фото не удалась. повторите попытку позже";
